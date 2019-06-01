@@ -6,7 +6,7 @@ class Card():
 	def __init__(self,color,num):
 		self.color = color
 		self.number = num
-	
+
 	def showData(self):
 		return "%s-%02d"%(self.color[0:3],self.number)
 
@@ -16,15 +16,15 @@ class Flag():
 		self.countainerA = []
 		self.countainerB = []
 		self.flagID = 'FLAG-'+str(flagID)
-	
+
 	def placeCard_inA(self,card):
 		self.countainerA.append(card)
-	
+
 	def placeCard_inB(self,card):
 		self.countainerB.append(card)
-		
+
 	def showFlag(self):
-		
+
 		# print('####',end='')
 		# 玩家A方 卡牌位置
 		for i in self.countainerA:
@@ -46,7 +46,7 @@ class Flag():
 				print('|      |',sep='',end='')
 		# print('####',end='')
 		print()
-	
+
 '''--- Main Pre-Game ---'''
 #建立卡牌堆(普通)
 cardPile = []
@@ -54,17 +54,17 @@ for cl in ['RED','ORANGE','YELLOW','GREEN','BLUE','PURPLE']:
 	for nm in range(1,11):
 		newCard = Card(cl,nm)
 		cardPile.append(newCard)
-		
+
 # 檢查牌堆 60張
 # for cd in cardPile:
 	# print(cd.showData())
-	
+
 # 建立旗幟槽位
 flagSeries = []
 for fl in range(1,10):
 	newFlag = Flag(fl)
 	flagSeries.append(newFlag)
-	
+
 # 測試 加入牌
 flagSeries[0].placeCard_inA(cardPile[1])
 flagSeries[0].placeCard_inA(cardPile[6])
