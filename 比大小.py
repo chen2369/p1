@@ -43,7 +43,7 @@ class Compare():	#傳入場面上的牌，兩方的牌面 list[0:30] * 2
 	def who_win(self):	#判斷誰贏
 
 		who_times = [(k, len(list(v))) for k, v in itertools.groupby(self.win)]
-		who = {"a" : 0, "b" : 1}
+		who = {"a" : 0, "b" : 0}
 		for i in range(len(who_times)):
 			if who_times[i][1] == 3:
 				return who_times[i][0]
