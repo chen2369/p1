@@ -1,24 +1,27 @@
 import itertools
 
 
-class Compare(cardboard):	#傳入場面上的牌，兩方的牌面 list[0:30] * 2
+class Compare():	#傳入場面上的牌，兩方的牌面 list[0:30] * 2
 
-	def __init__(self):
+	def __init__(self, cardboard):
 
 		self.acard = cardboard[0:30]
-		self.bcard = cardboard[31:60]
+		self.bcard = cardboard[30:60]
 		self.win = []
 		for i in range(10):
-			self.win.append(duel(self.acard[3*i : 3*(i+1)], self.bcard[3*i : 3*(i+1)]))
+			com = self.duel(self.acard[3*i : 3*(i+1)], self.bcard[3*i : 3*(i+1)])
+			self.win.append(com)
+			if i == 9:
+				print(self.who_win())
 
-	def duel(acard, bcard):	#判斷誰獲得該棋
+	def duel(self, acard, bcard):	#判斷誰獲得該棋
 
-		if what_types(acard) > what_types(bcard):
+		if self.what_types(acard) > self.what_types(bcard):
 			return "a"
 		else:
 			return "b"
 
-	def what_types(combin):	#判斷類型，傳入三張牌，回傳分數
+	def what_types(self, combin):	#判斷類型，傳入三張牌，回傳分數
 
 		color = [combin[i].color for i in range(3)]
 		number = [combin[i].number for i in range(3)]
@@ -34,18 +37,21 @@ class Compare(cardboard):	#傳入場面上的牌，兩方的牌面 list[0:30] * 
 			grade += number[i]
 		return grade
 
-	def who_win(self.win):	#判斷誰贏
+	def who_win(self):	#判斷誰贏
 
 		who_times = [(k, len(list(v))) for k, v in itertools.groupby(self.win)]
-		who = {}
+		who = {"a" : 0, "b" : 1}
 		for i in range(len(who_times)):
 			if who_times[i][1] == 3:
 				return who_times[i][0]
-			if who_times[i][0] not in who:
-				who[who_times[i][0]] = 1
 			else:
 				who[who_times[i][0]] += 1
-		if who["a"] > who["b"]:
+		if who['a'] > who['b']:
 			return "a"
 		else:
 			return "b"
+
+
+cardboard = [...]
+winner = Compare(cardboard)
+winner.who_win()
