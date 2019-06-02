@@ -8,16 +8,18 @@ import time
 '''--- Class ---'''
 # 卡牌 Class
 class Card():
+	## 基本資料 ##
 	def __init__(self,color,num):
-		self.color = color
-		self.number = num
+		self.color = color				# 顏色
+		self.number = num				# 數字
 	
 	## 顯示卡牌資訊 ##
-	def showData(self):
+	def showData(self):	# 回傳值
 		return "%s-%02d"%(self.color[0:3],self.number)
 
 # 母牌堆 Class
 class Cardpool():
+	## 基本資料 ##
 	def __init__(self):
 		# 建立母牌堆 60張普通卡
 		self.cardPile = self.createNew_normal60()
@@ -53,6 +55,7 @@ class Cardpool():
 
 # 玩家手牌Class
 class Hands():
+	## 基本資料 ##
 	def __init__(self,id,cardpile):
 		self.id = id
 		self.cardHold = []
@@ -91,19 +94,24 @@ class Hands():
 
 # 旗幟 Class
 class Flag():
+	## 基本資料 ##
 	def __init__(self,flagID):
-		self.countainerA = []
-		self.countainerB = []
+		self.containerA = []
+		self.containerB = []
 		self.flagID = 'FLAG-'+str(flagID)
 		self.winner = 0
 	
 	## 在A槽放置卡牌 ##
 	def placeCard_inA(self,card):
-		self.countainerA.append(card)
+		self.containerA.append(card)
+		if len(self.containerA)==3 & len(self.containerB)==3:
+			self.winner = self.duel()
 	
 	## 在B槽放置卡牌 ##
 	def placeCard_inB(self,card):
-		self.countainerB.append(card)
+		self.containerB.append(card)
+		if len(self.containerA)==3 & len(self.containerB)==3:
+			self.winner = self.duel()
 	
 	## 牌組的分數 ##
 	def what_types(self, combin):	#判斷類型，傳入三張牌，回傳分數
@@ -124,42 +132,53 @@ class Flag():
 		
 	## 比較A槽B槽的分數大小 ##
 	def duel(self):	#判斷誰獲得該棋
-		if self.what_types(self.containerA) > self.what_types(self.containerA):
-			return "a"
+		if self.what_types(self.containerA) > self.what_types(self.containerB):
+			return "A"
 		else:
-			return "b"
+			return "B"
 
 	def showFlag(self):
 		
+		# 已被佔領
+		if self.winner == 'A':
+			mid = 'A佔領 '
+		elif self.winner == 'B':
+			mid = 'B佔領 '
+		else :
+			mid = self.flagID
+		
 		# print('####',end='')
 		# 玩家A方 卡牌位置
-		for i in self.countainerA:
+		for i in self.containerA:
 			print('|',i.showData(),'|',sep='',end='')
-		if len(self.countainerA)==3:
+		if len(self.containerA)==3:
 			pass
 		else:
-			for i2 in range(3-len(self.countainerA)):
+			for i2 in range(3-len(self.containerA)):
 				print('|      |',sep='',end='')
 		# 旗幟id
-		print('[',self.flagID,']',sep = '',end = '')
+		print(']',mid,'[',sep = '',end = '')
 		# 玩家B方 卡牌位置
-		for j in self.countainerB:
+		for j in self.containerB:
 			print('|',j.showData(),'|',sep='',end='')
-		if len(self.countainerB)==3:
+		if len(self.containerB)==3:
 			pass
 		else:
-			for j2 in range(3-len(self.countainerB)):
+			for j2 in range(3-len(self.containerB)):
 				print('|      |',sep='',end='')
 		# print('####',end='')
 		print()
 
 # 棋盤 Class
 class Board():
+	## 基本資料 ##
 	def __init__(self):
+		# 包含九個旗幟
 		self.all_flag = self.buildNew_flag9()
+		# 訊息提示
 		print("棋盤初始化...")
 		
-	
+	## 建立9座新旗幟 ##
 	def buildNew_flag9(self):
 		flagSeries = []
 		for fl in range(1,10):
@@ -167,24 +186,26 @@ class Board():
 			flagSeries.append(newFlag)
 		return flagSeries
 	
+	## 顯示棋盤 (所有旗幟)
 	def show_allFlag(self):
 		for fg in self.all_flag:
 			fg.showFlag()
 	
 '''--- Global Pre-Game Function ---'''
+# 回合指令 A
 def movement_playerA():
 	cards_playerA.takeCard(cardPile)									#抽一張牌
 	cards_playerA.showHold()											#顯示手牌
-	command = input("輸入指令(如格式): 卡牌編號,旗幟位置").split(',')
+	command = input("輸入指令(如格式): 卡牌編號,旗幟位置\t").split(',')
 	cardTaken = cards_playerA.throwcard(int(command[0]))				#出一張牌
 	global board	
 	board.all_flag[int(command[1])-1].placeCard_inA(cardTaken)			#將牌放上場
 	
-
+# 回合指令 B
 def movement_playerB():
 	cards_playerB.takeCard(cardPile)									#抽一張牌
 	cards_playerB.showHold()											#顯示手牌
-	command = input("輸入指令(如格式): 卡牌編號,旗幟位置").split(',')
+	command = input("輸入指令(如格式): 卡牌編號,旗幟位置\t").split(',')
 	cardTaken = cards_playerB.throwcard(int(command[0]))				#出一張牌
 	global board	
 	board.all_flag[int(command[1])-1].placeCard_inB(cardTaken)			#將牌放上場
@@ -204,20 +225,24 @@ cards_playerB = Hands('B',cardPile)
 # 檢視手牌
 print("==== PlayerA ====")
 confirm = input("...按下ENTER確認手牌...")
+print()
 cards_playerA.showHold()
 confirm = input("...按下ENTER確認開始...")
+print()
 print("==== PlayerB ====")
 confirm = input("...按下ENTER確認手牌...")
+print()
 cards_playerB.showHold()
 confirm = input("...按下ENTER確認開始...")
+print()
 
 '''--- Main In-Game ---'''
 # 執行27回合
-for round in range(27):
+for round in range(1,28):
 	## A的回合 ##
 	print("==== Round %02d PlayerA ===="%round)
 	board.show_allFlag() 							# 顯示棋盤
-	confirm = input("...按下ENTER確認...")			# A 確認開始
+	# confirm = input("...按下ENTER確認...")			# A 確認開始
 	movement_playerA()								# A 下指令
 
 	board.show_allFlag()  							# 顯示棋盤
@@ -225,7 +250,7 @@ for round in range(27):
 	## B的回合 ##
 	print("==== Round %02d PlayerB ===="%round)
 	board.show_allFlag()  							# 顯示棋盤
-	confirm = input("...按下ENTER確認...")			# B 確認開始
+	# confirm = input("...按下ENTER確認...")			# B 確認開始
 	movement_playerB()								# B 下指令
 
 	board.show_allFlag()  							# 顯示棋盤
