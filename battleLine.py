@@ -1,0 +1,240 @@
+# Battle Line
+
+'''--- Tools ---'''
+import random
+import time
+
+
+'''--- Class ---'''
+# 卡牌 Class
+class Card():
+	def __init__(self,color,num):
+		self.color = color
+		self.number = num
+	
+	## 顯示卡牌資訊 ##
+	def showData(self):
+		return "%s-%02d"%(self.color[0:3],self.number)
+
+# 母牌堆 Class
+class Cardpool():
+	def __init__(self):
+		# 建立母牌堆 60張普通卡
+		self.cardPile = self.createNew_normal60()
+		# 母牌堆洗牌
+		random.shuffle(self.cardPile)
+		# 已經取出的數量cnt (牌堆剩下 60 - cnt)
+		self.used_cnt = 0
+		# 訊息提示
+		print("洗牌中...")
+
+	## 牌堆是否有牌 ##
+	def has_next(self):
+		return self.used_cnt < 60
+	
+	## 牌堆取出牌 ##
+	def get_next(self):
+		newCard = self.cardPile[self.used_cnt]
+		self.used_cnt += 1
+		return newCard
+		
+	## 建立60張普通牌 ##
+	def createNew_normal60(self):
+		cardPile = []
+		for cl in ['RED','ORANGE','YELLOW','GREEN','BLUE','PURPLE']:
+			for nm in range(1,11):
+				newCard = Card(cl,nm)
+				cardPile.append(newCard)
+		return cardPile
+		
+	## 牌堆進行洗牌 ##
+	def shuffleCardPile(self):
+		random.shuffle(self.cardPile)
+
+# 玩家手牌Class
+class Hands():
+	def __init__(self,id,cardpile):
+		self.id = id
+		self.cardHold = []
+		self.take7(cardpile)
+		
+		
+	## 抽七張手牌##
+	def take7(self,cardpile):
+		for i in range(7):
+			self.takeCard(cardpile)
+	
+	## 抽牌(手牌+1) ##
+	def takeCard(self,cardpile):
+		if cardpile.has_next:
+			self.cardHold.append(cardpile.get_next())
+		else:	# 沒牌不抽
+			pass
+			
+		#重新整理 好看
+		# sorted(self.cardHold)
+		
+	## 出牌(手牌-1)
+	def throwcard(self,num):
+		card = self.cardHold[num-1]
+		self.cardHold.remove(self.cardHold[num-1])
+		return card
+		
+	## 檢視手牌 ##
+	def showHold(self):
+		print("Player",self.id,"-Card List :",sep='')
+		# 每張手牌
+		for i in range(len(self.cardHold)):
+			print('<',self.cardHold[i].showData(),sep='',end='> ')
+		print()
+		
+
+# 旗幟 Class
+class Flag():
+	def __init__(self,flagID):
+		self.countainerA = []
+		self.countainerB = []
+		self.flagID = 'FLAG-'+str(flagID)
+		self.winner = 0
+	
+	## 在A槽放置卡牌 ##
+	def placeCard_inA(self,card):
+		self.countainerA.append(card)
+	
+	## 在B槽放置卡牌 ##
+	def placeCard_inB(self,card):
+		self.countainerB.append(card)
+	
+	## 牌組的分數 ##
+	def what_types(self, combin):	#判斷類型，傳入三張牌，回傳分數
+
+		color = [combin[i].color for i in range(3)]
+		number = [combin[i].number for i in range(3)]
+		number.sort()
+		grade = 0
+		if color[0] == color[1] == color[2]:
+			grade += 970
+		if number[0] + 1 == number[1] and number[1] + 1 == number[2]:
+			grade += 100 * number[0]
+		if number[0] == number[1] == number[2]:
+			grade += 1000
+		for i in range(3):
+			grade += number[i]
+		return grade
+		
+	## 比較A槽B槽的分數大小 ##
+	def duel(self):	#判斷誰獲得該棋
+		if self.what_types(self.containerA) > self.what_types(self.containerA):
+			return "a"
+		else:
+			return "b"
+
+	def showFlag(self):
+		
+		# print('####',end='')
+		# 玩家A方 卡牌位置
+		for i in self.countainerA:
+			print('|',i.showData(),'|',sep='',end='')
+		if len(self.countainerA)==3:
+			pass
+		else:
+			for i2 in range(3-len(self.countainerA)):
+				print('|      |',sep='',end='')
+		# 旗幟id
+		print('[',self.flagID,']',sep = '',end = '')
+		# 玩家B方 卡牌位置
+		for j in self.countainerB:
+			print('|',j.showData(),'|',sep='',end='')
+		if len(self.countainerB)==3:
+			pass
+		else:
+			for j2 in range(3-len(self.countainerB)):
+				print('|      |',sep='',end='')
+		# print('####',end='')
+		print()
+
+# 棋盤 Class
+class Board():
+	def __init__(self):
+		self.all_flag = self.buildNew_flag9()
+		print("棋盤初始化...")
+		
+	
+	def buildNew_flag9(self):
+		flagSeries = []
+		for fl in range(1,10):
+			newFlag = Flag(fl)
+			flagSeries.append(newFlag)
+		return flagSeries
+	
+	def show_allFlag(self):
+		for fg in self.all_flag:
+			fg.showFlag()
+	
+'''--- Global Pre-Game Function ---'''
+def movement_playerA():
+	cards_playerA.takeCard(cardPile)									#抽一張牌
+	cards_playerA.showHold()											#顯示手牌
+	command = input("輸入指令(如格式): 卡牌編號,旗幟位置").split(',')
+	cardTaken = cards_playerA.throwcard(int(command[0]))				#出一張牌
+	global board	
+	board.all_flag[int(command[1])-1].placeCard_inA(cardTaken)			#將牌放上場
+	
+
+def movement_playerB():
+	cards_playerB.takeCard(cardPile)									#抽一張牌
+	cards_playerB.showHold()											#顯示手牌
+	command = input("輸入指令(如格式): 卡牌編號,旗幟位置").split(',')
+	cardTaken = cards_playerB.throwcard(int(command[0]))				#出一張牌
+	global board	
+	board.all_flag[int(command[1])-1].placeCard_inB(cardTaken)			#將牌放上場
+
+'''--- Main Pre-Game ---'''
+# 建立棋盤 (同事建立9座旗幟)
+board = Board()
+time.sleep(3)
+board.show_allFlag() 	# 首次檢視棋盤
+time.sleep(1)
+#建立卡牌堆(普通)
+cardPile = Cardpool()
+time.sleep(3)
+# 發牌
+cards_playerA = Hands('A',cardPile)
+cards_playerB = Hands('B',cardPile)
+# 檢視手牌
+print("==== PlayerA ====")
+confirm = input("...按下ENTER確認手牌...")
+cards_playerA.showHold()
+confirm = input("...按下ENTER確認開始...")
+print("==== PlayerB ====")
+confirm = input("...按下ENTER確認手牌...")
+cards_playerB.showHold()
+confirm = input("...按下ENTER確認開始...")
+
+'''--- Main In-Game ---'''
+# 執行27回合
+for round in range(27):
+	## A的回合 ##
+	print("==== Round %02d PlayerA ===="%round)
+	board.show_allFlag() 							# 顯示棋盤
+	confirm = input("...按下ENTER確認...")			# A 確認開始
+	movement_playerA()								# A 下指令
+
+	board.show_allFlag()  							# 顯示棋盤
+	confirm = input("...按下ENTER確認結束回合...")
+	## B的回合 ##
+	print("==== Round %02d PlayerB ===="%round)
+	board.show_allFlag()  							# 顯示棋盤
+	confirm = input("...按下ENTER確認...")			# B 確認開始
+	movement_playerB()								# B 下指令
+
+	board.show_allFlag()  							# 顯示棋盤
+	confirm = input("...按下ENTER確認結束回合...")
+	
+# 判斷輸贏
+
+
+
+'''------'''
+
+'''------'''
