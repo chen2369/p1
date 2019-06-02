@@ -1,16 +1,20 @@
 import itertools
 
-'''--- Class ---'''
-# 比大小 Class
+
 class Compare():	#傳入場面上的牌，兩方的牌面 list[0:30] * 2
 
 	def __init__(self, cardboard):
 
-		self.acard = cardboard[0:27]
-		self.bcard = cardboard[27:54]
+		self.acard = cardboard[0:30]
+		self.bcard = cardboard[30:60]
 		self.win = []
+		for i in range(10):
+			com = self.duel(self.acard[3*i : 3*(i+1)], self.bcard[3*i : 3*(i+1)])
+			self.win.append(com)
+			if i == 9:
+				print(self.who_win())
 
-	def duel(self, acard, bcard):	#判斷誰獲得該旗幟
+	def duel(self, acard, bcard):	#判斷誰獲得該棋
 
 		if self.what_types(acard) > self.what_types(bcard):
 			return "a"
@@ -33,13 +37,6 @@ class Compare():	#傳入場面上的牌，兩方的牌面 list[0:30] * 2
 			grade += number[i]
 		return grade
 
-	def who_get_flag(self):
-		for i in range(9):
-			com = self.duel(self.acard[3*i : 3*(i+1)], self.bcard[3*i : 3*(i+1)])
-			self.win.append(com)
-			if i == 9:
-				print(self.who_win())
-				
 	def who_win(self):	#判斷誰贏
 
 		who_times = [(k, len(list(v))) for k, v in itertools.groupby(self.win)]
