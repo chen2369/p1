@@ -69,7 +69,7 @@ class Hands():
 	
 	## 抽牌(手牌+1) ##
 	def takeCard(self,cardpile):
-		if cardpile.has_next:
+		if cardpile.has_next():
 			self.cardHold.append(cardpile.get_next())
 		else:	# 沒牌不抽
 			pass
@@ -78,7 +78,7 @@ class Hands():
 		# sorted(self.cardHold)
 		
 	## 出牌(手牌-1)
-	def throwcard(self,num):
+	def throwcard(self,num):	# 回傳卡牌
 		card = self.cardHold[num-1]
 		self.cardHold.remove(self.cardHold[num-1])
 		return card
@@ -175,6 +175,7 @@ class Board():
 	def __init__(self):
 		# 包含九個旗幟
 		self.all_flag = self.buildNew_flag9()
+		self.gameWinner = 0
 		# 訊息提示
 		print("棋盤初始化...")
 		
@@ -186,17 +187,38 @@ class Board():
 			flagSeries.append(newFlag)
 		return flagSeries
 	
-	## 顯示棋盤 (所有旗幟)
+	## 顯示棋盤 (所有旗幟) ##
 	def show_allFlag(self):
 		for fg in self.all_flag:
 			fg.showFlag()
 	
+	## 判斷輸贏 ##
+	def judge_gameWinner(self):
+		aWin = 0
+		bWin = 0
+		# 一一檢查
+		for ck in self.all_flag:
+			if ck.winner == 'A':
+				aWin += 1
+			elif ck.winner == 'B':
+				bWin +=1
+		# 判斷
+		if aWin > 4:
+			self.gameWinner = 'A'
+		elif bWin > 4:
+			self.gameWinner = 'B'
+	
+	## 顯示贏家 ##
+	def showWinner(self):
+		return self.gameWinner
+		
 '''--- Global Pre-Game Function ---'''
 # 回合指令 A
 def movement_playerA():
 	cards_playerA.takeCard(cardPile)									#抽一張牌
 	cards_playerA.showHold()											#顯示手牌
 	command = input("輸入指令(如格式): 卡牌編號,旗幟位置\t").split(',')
+	print()
 	cardTaken = cards_playerA.throwcard(int(command[0]))				#出一張牌
 	global board	
 	board.all_flag[int(command[1])-1].placeCard_inA(cardTaken)			#將牌放上場
@@ -206,6 +228,7 @@ def movement_playerB():
 	cards_playerB.takeCard(cardPile)									#抽一張牌
 	cards_playerB.showHold()											#顯示手牌
 	command = input("輸入指令(如格式): 卡牌編號,旗幟位置\t").split(',')
+	print()
 	cardTaken = cards_playerB.throwcard(int(command[0]))				#出一張牌
 	global board	
 	board.all_flag[int(command[1])-1].placeCard_inB(cardTaken)			#將牌放上場
@@ -246,7 +269,9 @@ for round in range(1,28):
 	movement_playerA()								# A 下指令
 
 	board.show_allFlag()  							# 顯示棋盤
+	time.sleep(0.5)
 	confirm = input("...按下ENTER確認結束回合...")
+	print()
 	## B的回合 ##
 	print("==== Round %02d PlayerB ===="%round)
 	board.show_allFlag()  							# 顯示棋盤
@@ -254,10 +279,13 @@ for round in range(1,28):
 	movement_playerB()								# B 下指令
 
 	board.show_allFlag()  							# 顯示棋盤
+	time.sleep(0.5)
 	confirm = input("...按下ENTER確認結束回合...")
+	print()
 	
 # 判斷輸贏
-
+board.judge_gameWinner()
+print("Game Over >> ",board.showWinner(),"Wins !")
 
 
 '''------'''
