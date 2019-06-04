@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[29]:
 
 
 # Battle Line
@@ -241,24 +241,24 @@ def movement_playerA():
     cards_playerA.showHold()                                            #顯示手牌
     command = input("輸入指令(如格式): 卡牌編號,旗幟位置\t").split(',')
     print()
+    global board 
     cardTaken = cards_playerA.throwcard(int(command[0]))                #出一張牌
-    send_list = [cardTaken, board.all_flag[int(command[1])-1]]          #要傳出的list
-    data = pickle.dumps(send_list)
-    s.send(data)                                                        #send出牌選擇               
-    global board    
+    send_list = [cardTaken,int(command[1])-1]          #要傳出的list
+    dataA = pickle.dumps(send_list)
+    conn.send(dataA)                                                    #send出牌選擇                  
     board.all_flag[int(command[1])-1].placeCard_inA(cardTaken)          #將牌放上場
     
 # 回合指令 B
 def movement_playerB():
-    cards_playerB.takeCard(cardPile)                                    #抽一張牌
-    cards_playerB.showHold()                                            #顯示手牌
-    command = input("輸入指令(如格式): 卡牌編號,旗幟位置\t").split(',')
-    print()
-    cardTaken = cards_playerB.throwcard(int(command[0]))                #出一張牌
+    new_card = [cardPile.get_next()]
+    dataA = pickle.dumps(new_card)
+    conn.send(dataA)
+    dataB = conn.recv(1024)                                         #顯示手牌
+    decision_B = pickle.loads(dataB)
+    cardTaken = decision_B[0] 
     global board    
-    board.all_flag[int(command[1])-1].placeCard_inB(cardTaken)            #將牌放上場
+    board.all_flag[decision_B[1]].placeCard_inB(cardTaken)            #將牌放上場
 
-    
 '''--- Server Connection ---'''
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -278,8 +278,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     cards_playerA = Hands('A',cardPile)
     cards_playerB = Hands('B',cardPile)
     #
-    data = pickle.dumps(cards_playerB)
-    conn.send(data)
+    dataA = pickle.dumps(cards_playerB)
+    conn.send(dataA)
     # 檢視手牌
     print("==== PlayerA ====")
     confirm = input("...按下ENTER確認手牌...")
@@ -300,6 +300,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         board.show_allFlag()                              # 顯示棋盤
         time.sleep(0.5)
         confirm = input("...按下ENTER確認結束回合...")
+        conn.send(bytes("over", "utf-8"))
         print()
         ## 判斷遊戲是否分出勝負
         board.judge_gameWinner()
@@ -313,8 +314,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         movement_playerB()                                # B 下指令
         board.show_allFlag()                              # 顯示棋盤
         time.sleep(0.5)
-        confirm = input("...按下ENTER確認結束回合...")
-        print()
+        dataB = conn.recv(1024)
         ## 判斷遊戲是否分出勝負
         board.judge_gameWinner()
         if board.showWinner() != 0:
