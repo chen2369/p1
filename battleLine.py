@@ -13,6 +13,14 @@ class Card():
 		self.color = color				# 顏色
 		self.number = num				# 數字
 	
+	## 回傳color
+	def getColor(self):
+		return self.color
+
+	## 回傳color
+	def getNumber(self):
+		return self.number
+		
 	## 顯示卡牌資訊 ##
 	def showData(self):	# 回傳值
 		return "%s-%02d"%(self.color[0:3],self.number)
@@ -73,9 +81,10 @@ class Hands():
 			self.cardHold.append(cardpile.get_next())
 		else:	# 沒牌不抽
 			pass
-			
-		#重新整理 好看
-		# sorted(self.cardHold)
+		# self.showHold()
+		# 重新整理 好看
+		self.cardHold = sorted(self.cardHold,key=lambda x:[x.getColor(),x.getNumber()])
+		# self.showHold()
 		
 	## 出牌(手牌-1)
 	def throwcard(self,num):	# 回傳卡牌
@@ -262,30 +271,39 @@ print()
 '''--- Main In-Game ---'''
 # 執行27回合
 for round in range(1,28):
+
 	## A的回合 ##
 	print("==== Round %02d PlayerA ===="%round)
 	board.show_allFlag() 							# 顯示棋盤
-	# confirm = input("...按下ENTER確認...")			# A 確認開始
+	# confirm = input("...按下ENTER確認...")		# A 確認開始
 	movement_playerA()								# A 下指令
-
 	board.show_allFlag()  							# 顯示棋盤
 	time.sleep(0.5)
 	confirm = input("...按下ENTER確認結束回合...")
 	print()
+	## 判斷遊戲是否分出勝負
+	board.judge_gameWinner()
+	if board.showWinner() != 0:
+		print("Game Over >> ",board.showWinner(),"Wins !") 
+		break
 	## B的回合 ##
 	print("==== Round %02d PlayerB ===="%round)
 	board.show_allFlag()  							# 顯示棋盤
-	# confirm = input("...按下ENTER確認...")			# B 確認開始
+	# confirm = input("...按下ENTER確認...")		# B 確認開始
 	movement_playerB()								# B 下指令
-
 	board.show_allFlag()  							# 顯示棋盤
 	time.sleep(0.5)
 	confirm = input("...按下ENTER確認結束回合...")
 	print()
-	
+	## 判斷遊戲是否分出勝負
+	board.judge_gameWinner()
+	if board.showWinner() != 0:
+		print("Game Over >> ",board.showWinner(),"Wins !") 
+		break
+
 # 判斷輸贏
-board.judge_gameWinner()
-print("Game Over >> ",board.showWinner(),"Wins !")
+# board.judge_gameWinner()
+# print("Game Over >> ",board.showWinner(),"Wins !")
 
 
 '''------'''
