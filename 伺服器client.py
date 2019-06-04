@@ -1,6 +1,6 @@
 import socket
 
-HOST = '10.46.220.195'  # The server's hostname or IP address
+HOST = '10.129.189.232'  # The server's hostname or IP address
 PORT = 65432            # The port used by the server
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -14,3 +14,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             break
         hello = input()
         s.send(bytes(hello, "utf-8"))
+        if hello == "bye":
+            break
