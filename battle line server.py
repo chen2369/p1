@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[29]:
-
-
 # Battle Line
 
 '''--- Tools ---'''
@@ -60,6 +54,7 @@ class Cardpool():
         newCard = self.cardPile[self.used_cnt]
         self.used_cnt += 1
         return newCard
+
         
     ## 建立60張普通牌 ##
     def createNew_normal60(self):
@@ -250,9 +245,11 @@ def movement_playerA():
     
 # 回合指令 B
 def movement_playerB():
-    new_card = [cardPile.get_next()]
-    dataA = pickle.dumps(new_card)
-    conn.send(dataA)
+    global round
+    if round <= 23:                                                    #牌沒了就不抽
+        new_card = [cardPile.get_next()]                               #幫B抽一張牌
+        dataA = pickle.dumps(new_card)
+        conn.send(dataA)
     dataB = conn.recv(1024)                                         #顯示手牌
     decision_B = pickle.loads(dataB)
     cardTaken = decision_B[0] 
@@ -260,7 +257,7 @@ def movement_playerB():
     board.all_flag[decision_B[1]].placeCard_inB(cardTaken)            #將牌放上場
 
 '''--- Server Connection ---'''
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:         #建立伺服器
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((HOST, PORT))
     s.listen()
@@ -277,7 +274,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # 發牌
     cards_playerA = Hands('A',cardPile)
     cards_playerB = Hands('B',cardPile)
-    #
+    #把B的手牌傳給B
     dataA = pickle.dumps(cards_playerB)
     conn.send(dataA)
     # 檢視手牌
@@ -329,4 +326,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     '''------'''
 
     '''------'''
-

@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
 
 '''--- Tools ---'''
 import random
@@ -244,9 +238,11 @@ def movement_playerA():
     
 # 回合指令 B
 def movement_playerB():
-    dataA = s.recv(1024)                                  #抽一張牌
-    new_card = pickle.loads(dataA)
-    cards_playerB.cardHold.append(new_card[0])
+    global round
+    if round <= 23:                                           #牌沒了就不抽
+        dataA = s.recv(1024)                                  #A幫忙抽一張牌
+        new_card = pickle.loads(dataA)
+        cards_playerB.cardHold.append(new_card[0])
     cards_playerB.showHold()                                            #顯示手牌
     command = input("輸入指令(如格式): 卡牌編號,旗幟位置\t").split(',')
     print()
@@ -321,4 +317,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 '''------'''
 
 '''------'''
-
