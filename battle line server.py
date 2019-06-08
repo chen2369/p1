@@ -8,7 +8,12 @@ import pickle
 
 '''--- Server imformation ---'''
 
-HOST = '10.46.220.195'  #我電腦的IP
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+HOST = s.getsockname()[0]	#自動取得主機IP
+s.close()
+
+# HOST = '10.46.220.195'  #我電腦的IP
 PORT = 65432# Port to listen on (non-privileged ports are > 1023)
 
 
