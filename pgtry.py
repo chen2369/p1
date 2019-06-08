@@ -1,7 +1,7 @@
 import pygame as pg
 from pygame.locals import QUIT
 from pygame.locals import KEYDOWN, KEYUP
-from pygame.locals import K_LEFT, K_RIGHT, K_UP, K_DOWN
+from pygame.locals import K_LEFT, K_RIGHT, K_UP, K_DOWN, K_SPACE
 import sys
 import time
 
@@ -60,7 +60,7 @@ running = True
 change_color = True  # 控制方塊颜色
 while running:
 	for event in pg.event.get():
-		if event.type == pg.QUIT:
+		if event.type == pg.KEYDOWN and event.dict['key'] == pg.K_SPACE:		#當空白鍵被按下則跳出
 			running = False
 		x, y = pg.mouse.get_pos()
 		if event.type == pg.MOUSEBUTTONDOWN and 44 < x < 126 and 570 < y < 693:		#選牌
