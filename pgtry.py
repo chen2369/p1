@@ -47,7 +47,7 @@ bg.blit(image1, (988,160))
 screen.blit(bg, (0,0))
 pg.display.update()
 
-card0= pg.image.load("C:\\Users\\chen8\\Desktop\\card\\RED-01.png")
+card0 = pg.image.load("C:\\Users\\chen8\\Desktop\\card\\RED-01.png")
 card0.convert()
 bg.blit(card0, (-48,498))
 card1 = pg.image.load("C:\\Users\\chen8\\Desktop\\card\\BLU-01.png")
