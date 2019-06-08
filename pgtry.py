@@ -154,6 +154,14 @@ while running:
 #    screen.blit(bg, (x, y))
 #    pg.display.update()
 
+## 旗幟 ##
+A = True
+if A:
+	flag1 = pg.image.load("C:\\Users\\chen8\\Desktop\\redflag.png")
+	flag1.convert()
+	bg.blit(flag1, (0,221))
+	screen.blit(bg, (0,0))
+	pg.display.update()
 
 ## 關閉 ##
 running = True
