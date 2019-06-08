@@ -15,6 +15,7 @@ import socket
 import pickle
 
 '''--- Server Information ---'''
+
 HOST = '10.46.220.195'  # The server's hostname or IP address
 PORT = 65432            # The port used by the server
 
@@ -271,6 +272,7 @@ def movement_playerB():
     #將牌放上場
 '''--- Server Connection ---'''
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.settimeout(None)    # 連線時間0 (無限)
     s.connect((HOST, PORT))
     
     '''--- Main Pre-Game ---'''    
