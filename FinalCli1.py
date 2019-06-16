@@ -444,6 +444,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		## A的回合 ##
 		# print("==== Round %02d PlayerA ===="%round)
 		board.show_allFlag() 							# 顯示棋盤
+		cards_playerB.cardHold = sorted(cards_playerB.cardHold,key=lambda x:[x.getColor(),x.getNumber()])
 		cards_playerB.showHold()
 		movement_playerA()								# A 下指令
 		board.show_allFlag()  							# 顯示棋盤
